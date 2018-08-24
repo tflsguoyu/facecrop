@@ -1,6 +1,6 @@
 import os
 
-f = open("2017beauty.txt", "r")
+f = open("keywords.txt", "r")
 names = f.read().splitlines()
 f.close()
 

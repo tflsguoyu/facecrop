@@ -132,7 +132,7 @@ def _draw_kp(img, face_lm, size):
         img[lm_this[1]-size:lm_this[1]+size,lm_this[0]-size:lm_this[0]+size,2] = 0
     return img
 
-def _save_lm_to_file(face_lm, fn, h, w):
+def _save_lm_to_file(fn, face_lm, h, w):
     lm = []
     for facial_feature in face_lm.keys():
         lm.extend(face_lm[facial_feature])
@@ -151,10 +151,13 @@ dir_facesMarkers = dir_input + '_facesMarkers/'
 os.makedirs(dir_faces, exist_ok=True)
 os.makedirs(dir_markers, exist_ok=True)
 os.makedirs(dir_facesMarkers, exist_ok=True)
+os.makedirs(dir_faces + dir_faces, exist_ok=True)
+os.makedirs(dir_markers + dir_markers, exist_ok=True)
+os.makedirs(dir_facesMarkers + dir_facesMarkers, exist_ok=True)
 
 fn_list = os.listdir(dir_input)
 for fn in fn_list:
-    print('Processing ' + fn + ' ...')
+    # print('Processing ' + fn + ' ...')
 
     img = cv2.imread(dir_input + '/' + fn)
     try:
@@ -163,19 +166,33 @@ for fn in fn_list:
         print('image can not be read')
         continue
 
-    face_lm_list = fr.face_landmarks(img)
-    print('%d face found' % (len(face_lm_list)))
-    if len(face_lm_list) == 0:
-        print('no face detected')
+    H,W,C = img.shape
+    imvar=cv2.Laplacian(img[int(H/3):int(2*H/3),int(W/3):int(2*W/3),:], cv2.CV_64F).var()
+    if imvar < 100:
         continue
 
+    face_lm_list = fr.face_landmarks(img)
+    if len(face_lm_list) == 0:
+        print(fn + ': %d face found' % (len(face_lm_list)))
+        continue
+    if len(face_lm_list) == 1:
+        dir1 = dir_faces
+        dir2 = dir_markers
+        dir3 = dir_facesMarkers
+    elif len(face_lm_list) > 1:
+        dir1 = dir_faces + dir_faces
+        dir2 = dir_markers + dir_markers
+        dir3 = dir_facesMarkers + dir_facesMarkers
+        print(fn + ': %d face found' % (len(face_lm_list)))
+
+        
     img_kp = img.copy()
-    H,W,C = img_kp.shape
     face_lm = face_lm_list[0]
     
-    # img_kp = _draw_kp(img_kp, face_lm, size=max(2,int(min(H,W)/400)))
-    # cv2.imwrite(dir_facesMarkers + fn[:-4] + '_kp.jpg', img_kp);
+    img_kp = _draw_kp(img_kp, face_lm, size=max(2,int(min(H,W)/400)))
 
-    cv2.imwrite(dir_faces + fn, img);
-    _save_lm_to_file(face_lm, dir_markers + fn[:-4] + '.txt', H, W)
-
+    
+    cv2.imwrite(dir1 + '%.5f.jpg' % imvar, img);
+    _save_lm_to_file(dir2 + '%.5f.txt' % imvar, face_lm, H, W)
+    cv2.imwrite(dir3 + '%.5f_kp.jpg' % imvar, img_kp);
+    

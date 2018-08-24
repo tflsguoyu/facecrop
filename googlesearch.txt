@@ -1,2 +1,2 @@
 pip install google_images_download
-googleimagesdownload -k "asian beauty pinterest" -l 100
+googleimagesdownload -k "beauty girl" -l 100

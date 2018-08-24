@@ -121,7 +121,7 @@ def _padding(img_o):
     img[off_h:(off_h + H), off_w:(off_w + W), :] = img_o
     return img
 
-def _drow_kp(img, face_lm, size):
+def _draw_kp(img, face_lm, size):
     lm = []
     for facial_feature in face_lm.keys():
         lm.extend(face_lm[facial_feature])
@@ -136,20 +136,23 @@ def _drow_kp(img, face_lm, size):
 # Main: 
 dir_input = sys.argv[1]
 dir_faces = dir_input + '_faces/'
-dir_markers = dir_input + '_markers/'
 os.makedirs(dir_faces, exist_ok=True)
-os.makedirs(dir_markers, exist_ok=True)
 
 fn_list = os.listdir(dir_input)
-for fn in fn_list:
-    print('Processing ' + fn + ' ...')
+numOfImg = len(fn_list)
+for idxfn, fn in enumerate(fn_list):
+    print('Processing %d of %d: ' % (idxfn,numOfImg) + fn + ' ...' )
 
     img = cv2.imread(dir_input + '/' + fn)
     try:
-        img.shape    
+        img.shape
+        print(img.shape)    
     except:
         print('image can not be read')
-        continue
+        continue 
+ 
+    if img.shape[2] > 3:
+        img = img[:,:,0:3]    
 
     face_lm_list = fr.face_landmarks(img)
     print('%d face found' % (len(face_lm_list)))
@@ -157,13 +160,11 @@ for fn in fn_list:
         print('no face detected')
         continue
 
-    img_kp = img.copy()
-    H,W,C = img_kp.shape
-    for idx, face_lm in enumerate(face_lm_list):
-        img_kp = _drow_kp(img_kp, face_lm, size=max(2,int(min(H,W)/400)))
-
+    H,W,C = img.shape
+    for idx, face_lm in enumerate(face_lm_list):     
         img_this = _crop_face_o(img, face_lm, scale=2.5, adjust=0.2)
         img_this = _padding(img_this)
+        
         h,w,c = img_this.shape
         
         face_lm_list_this = fr.face_landmarks(img_this)
@@ -187,15 +188,24 @@ for fn in fn_list:
         img_this_warped_cropped = _crop_face_o(img_this_warped, face_lm_this, scale=1.65, adjust=0.05)
                 
         hh,ww,cc = img_this_warped_cropped.shape
-        if ww < 200:
+        if hh != ww:
+            print('Cropped image is not a square')
+            continue
+        # if ww < 200:
+        #     print('face too small')
+        #     continue
+        # if ww < 256:
+        #     img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(256,256))
+
+        if ww >= 512:
+            img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(512,512))
+        else:
             print('face too small')
             continue
-        if ww < 256:
-            img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(256,256))
-
-        if ww > 512:
-            img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(512,512))
-        
+        imvar=cv2.Laplacian(img[int(hh/3):int(2*hh/3),int(ww/3):int(2*ww/3),:], cv2.CV_64F).var()
+        if imvar < 100:
+            print('face too blur')
+            continue
         # mask = np.zeros((hh,ww),np.uint8)
         # bgdModel = np.zeros((1,65),np.float64)
         # fgdModel = np.zeros((1,65),np.float64)
@@ -203,7 +213,5 @@ for fn in fn_list:
         # mask2 = np.where((mask==2)|(mask==0),0,1).astype('uint8')
         # img_this_warped_cropped = img_this_warped_cropped*mask2[:,:,np.newaxis]
 
-        cv2.imwrite(dir_faces + fn[:-4] + '_%03d.jpg' % (idx+1), img_this_warped_cropped);
+        cv2.imwrite(dir_faces + '%.5f.jpg' % imvar, img_this_warped_cropped);
         print('face #%d cropped' % (idx+1))
-
-    cv2.imwrite(dir_markers + fn[:-4] + '_kp.jpg', img_kp);
