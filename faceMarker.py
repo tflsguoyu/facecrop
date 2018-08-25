@@ -167,10 +167,8 @@ for fn in fn_list:
         continue
 
     H,W,C = img.shape
-    imvar=cv2.Laplacian(img[int(H/3):int(2*H/3),int(W/3):int(2*W/3),:], cv2.CV_64F).var()
-    if imvar < 100:
-        continue
-
+    imvar=np.mean(img)
+    
     face_lm_list = fr.face_landmarks(img)
     if len(face_lm_list) == 0:
         print(fn + ': %d face found' % (len(face_lm_list)))

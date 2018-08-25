@@ -203,7 +203,7 @@ for idxfn, fn in enumerate(fn_list):
             print('face too small')
             continue
         imvar=cv2.Laplacian(img[int(hh/3):int(2*hh/3),int(ww/3):int(2*ww/3),:], cv2.CV_64F).var()
-        if imvar < 100:
+        if imvar < 20:
             print('face too blur')
             continue
         # mask = np.zeros((hh,ww),np.uint8)
