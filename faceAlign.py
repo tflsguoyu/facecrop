@@ -202,11 +202,11 @@ for idxfn, fn in enumerate(fn_list):
         else:
             print('face too small')
             continue
-        imvar = cv2.Laplacian(img[int(hh/3):int(2*hh/3),int(ww/3):int(2*ww/3),:], cv2.CV_64F).var()
+        imvar = cv2.Laplacian(img_this_warped_cropped[int(hh/3):int(2*hh/3),int(ww/3):int(2*ww/3),:], cv2.CV_64F).var()
         if imvar < 20:
             print('face too blur')
             continue
-        imvar = np.mean(img)
+        imvar = np.mean(img_this_warped_cropped)
         # mask = np.zeros((hh,ww),np.uint8)
         # bgdModel = np.zeros((1,65),np.float64)
         # fgdModel = np.zeros((1,65),np.float64)
