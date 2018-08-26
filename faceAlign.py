@@ -197,13 +197,15 @@ for idxfn, fn in enumerate(fn_list):
         # if ww < 256:
         #     img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(256,256))
 
-        if ww >= 512:
-            img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(512,512))
+        outputSize = 512
+        if ww >= outputSize:
+            img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(outputSize,outputSize))
         else:
             print('face too small')
             continue
-        imvar = cv2.Laplacian(img_this_warped_cropped[int(hh/3):int(2*hh/3),int(ww/3):int(2*ww/3),:], cv2.CV_64F).var()
-        if imvar < 20:
+
+        imvar = cv2.Laplacian(img_this_warped_cropped[int(outputSize/4):int(3*outputSize/4),int(outputSize/4):int(3*outputSize/4),:], cv2.CV_64F).var()
+        if imvar < 45:
             print('face too blur')
             continue
         imvar = np.mean(img_this_warped_cropped)

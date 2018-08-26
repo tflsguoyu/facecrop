@@ -167,30 +167,33 @@ for fn in fn_list:
         continue
 
     H,W,C = img.shape
+    
+    dir1 = dir_faces
+    # imvar = cv2.Laplacian(img[int(H/4):int(3*H/4),int(W/4):int(3*W/4),:], cv2.CV_64F).var()
     imvar=np.mean(img)
     
-    face_lm_list = fr.face_landmarks(img)
-    if len(face_lm_list) == 0:
-        print(fn + ': %d face found' % (len(face_lm_list)))
-        continue
-    if len(face_lm_list) == 1:
-        dir1 = dir_faces
-        dir2 = dir_markers
-        dir3 = dir_facesMarkers
-    elif len(face_lm_list) > 1:
-        dir1 = dir_faces + dir_faces
-        dir2 = dir_markers + dir_markers
-        dir3 = dir_facesMarkers + dir_facesMarkers
-        print(fn + ': %d face found' % (len(face_lm_list)))
+    # face_lm_list = fr.face_landmarks(img)
+    # if len(face_lm_list) == 0:
+    #     print(fn + ': %d face found' % (len(face_lm_list)))
+    #     continue
+    # if len(face_lm_list) == 1:
+    #     dir1 = dir_faces
+    #     dir2 = dir_markers
+    #     dir3 = dir_facesMarkers
+    # elif len(face_lm_list) > 1:
+    #     dir1 = dir_faces + dir_faces
+    #     dir2 = dir_markers + dir_markers
+    #     dir3 = dir_facesMarkers + dir_facesMarkers
+    #     print(fn + ': %d face found' % (len(face_lm_list)))
 
         
-    img_kp = img.copy()
-    face_lm = face_lm_list[0]
+    # img_kp = img.copy()
+    # face_lm = face_lm_list[0]
     
-    img_kp = _draw_kp(img_kp, face_lm, size=max(2,int(min(H,W)/400)))
+    # img_kp = _draw_kp(img_kp, face_lm, size=max(2,int(min(H,W)/400)))
+    
+    # _save_lm_to_file(dir2 + '%.5f.txt' % imvar, face_lm, H, W)
+    # cv2.imwrite(dir3 + '%.5f_kp.jpg' % imvar, img_kp);
 
-    
     cv2.imwrite(dir1 + '%.5f.jpg' % imvar, img);
-    _save_lm_to_file(dir2 + '%.5f.txt' % imvar, face_lm, H, W)
-    cv2.imwrite(dir3 + '%.5f_kp.jpg' % imvar, img_kp);
     
