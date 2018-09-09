@@ -205,8 +205,9 @@ for idxfn, fn in enumerate(fn_list):
             continue
 
         imvar = cv2.Laplacian(img_this_warped_cropped[int(outputSize/4):int(3*outputSize/4),int(outputSize/4):int(3*outputSize/4),:], cv2.CV_64F).var()
-        if imvar < 45:
-            print('face too blur')
+        # if imvar < 2:
+        if imvar < 35:
+            print('face too blur (<35): %f' % imvar)
             continue
         imvar = np.mean(img_this_warped_cropped)
         # mask = np.zeros((hh,ww),np.uint8)
