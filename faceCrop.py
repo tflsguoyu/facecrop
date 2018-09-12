@@ -191,31 +191,8 @@ for idxfn, fn in enumerate(fn_list):
         if hh != ww:
             print('Cropped image is not a square')
             continue
-        # if ww < 200:
-        #     print('face too small')
-        #     continue
-        # if ww < 256:
-        #     img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(256,256))
 
-        outputSize = 512
-        if ww >= outputSize:
-            img_this_warped_cropped = cv2.resize(img_this_warped_cropped,(outputSize,outputSize))
-        else:
-            print('face too small')
-            continue
-
-        imvar = cv2.Laplacian(img_this_warped_cropped[int(outputSize/4):int(3*outputSize/4),int(outputSize/4):int(3*outputSize/4),:], cv2.CV_64F).var()
-        # if imvar < 2:
-        if imvar < 35:
-            print('face too blur (<35): %f' % imvar)
-            continue
         imvar = np.mean(img_this_warped_cropped)
-        # mask = np.zeros((hh,ww),np.uint8)
-        # bgdModel = np.zeros((1,65),np.float64)
-        # fgdModel = np.zeros((1,65),np.float64)
-        # mask, bgdModel, fgdModel = cv2.grabCut( img_this_warped_cropped, mask, (2,1,ww-2,hh), bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_RECT)
-        # mask2 = np.where((mask==2)|(mask==0),0,1).astype('uint8')
-        # img_this_warped_cropped = img_this_warped_cropped*mask2[:,:,np.newaxis]
 
         cv2.imwrite(dir_faces + '%09.5f.jpg' % imvar, img_this_warped_cropped);
         print('face #%d cropped' % (idx+1))

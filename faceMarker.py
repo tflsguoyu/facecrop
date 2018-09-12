@@ -176,7 +176,7 @@ for fn in fn_list:
     face_lm_list = fr.face_landmarks(img)
     if len(face_lm_list) == 0:
         print(fn + ': %d face found' % (len(face_lm_list)))
-        cv2.imwrite(dir_faces + dir_faces + dir_faces + '%.5f.jpg' % imvar, img);
+        cv2.imwrite(dir_faces + dir_faces + dir_faces + '%09.5f.jpg' % imvar, img);
         continue
     if len(face_lm_list) == 1:
         dir1 = dir_faces
@@ -193,8 +193,8 @@ for fn in fn_list:
     
     img_kp = _draw_kp(img_kp, face_lm, size=max(2,int(min(H,W)/400)))
     
-    _save_lm_to_file(dir2 + '%.5f.txt' % imvar, face_lm, H, W)
-    cv2.imwrite(dir3 + '%.5f_kp.jpg' % imvar, img_kp);
+    _save_lm_to_file(dir2 + '%09.5f.txt' % imvar, face_lm, H, W)
+    cv2.imwrite(dir3 + '%09.5f_kp.jpg' % imvar, img_kp);
 
-    cv2.imwrite(dir1 + '%.5f.jpg' % imvar, img);
+    cv2.imwrite(dir1 + '%09.5f.jpg' % imvar, img);
     
